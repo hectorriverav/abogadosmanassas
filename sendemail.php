@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $message = $_POST["message"];
 
     // Destinatario del correo electrónico
-    $to = "contacto.kerikka@gmail.com";
+    $to = "info@abogadosmanassas.com";
 
     // Asunto del correo electrónico
     $subject = "Nuevo formulario de contacto";
