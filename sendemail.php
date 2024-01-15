@@ -1,5 +1,29 @@
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Verificar reCAPTCHA
+    $recaptchaSecretKey = "6LeOXtQUAAAAANIEQHye2h244GlU28a5jVKVfqv1"; 
+    $recaptchaResponse = $_POST['g-recaptcha-response'];
+
+    $recaptchaUrl = "https://www.google.com/recaptcha/api/siteverify";
+    $recaptchaData = [
+        'secret' => $recaptchaSecretKey,
+        'response' => $recaptchaResponse,
+        'remoteip' => $_SERVER['REMOTE_ADDR'],
+    ];
+
+    $recaptchaOptions = [
+        'http' => [
+            'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+            'method' => 'POST',
+            'content' => http_build_query($recaptchaData),
+        ],
+    ];
+
+    $recaptchaContext = stream_context_create($recaptchaOptions);
+    $recaptchaResult = json_decode(file_get_contents($recaptchaUrl, false, $recaptchaContext), true);
+
+    if ($recaptchaResult['success']) {
+                
     // Recopilar datos del formulario
     $username = $_POST["username"];
     $phone = $_POST["phone"];
@@ -31,9 +55,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Error al enviar el correo
         echo "Error al enviar el formulario. Por favor, inténtelo de nuevo.";
     }
+    
+    } else {
+        // Error en la verificación de reCAPTCHA
+        echo "Error en la verificación de reCAPTCHA. Por favor, inténtelo de nuevo.";
+    }
+       
 } else {
     // Redireccionar si se accede directamente a este script sin enviar el formulario
     header("Location: index.html");
     exit();
 }
 ?>
+
